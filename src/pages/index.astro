@@ -1,20 +1,87 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { STAGES } from "../scripts/main";
 ---
 
-<Layout title="COMP4020 prototype">
+<Layout title="The Shine Is Made of Time">
   <header>
     <nav aria-label="Primary">
       <a href="./">Home</a>
     </nav>
   </header>
   <main>
-    <h1>COMP4020 prototype</h1>
-    <p data-testid="intro">
-      Replace this with your prototype. This week's brief is on the course
-      website; <code>spec/README.md</code> explains how the checks in this repo
-      relate to it.
+    <h1>The Shine Is Made of Time</h1>
+    <p>
+      Move the slider to work one bead through the stages of Chinese lacquer
+      work, from a raw blank to a finished, polished shine.
     </p>
+    <svg
+      class="bead"
+      data-testid="bead"
+      data-stage="raw"
+      viewBox="0 0 120 120"
+      role="img"
+      aria-label="A lacquer bead, its surface changing as progress advances"
+    >
+      <defs>
+        <clipPath id="bead-clip">
+          <circle cx="60" cy="60" r="46" />
+        </clipPath>
+        <filter
+          id="bead-marble-filter"
+          x="-30%"
+          y="-30%"
+          width="160%"
+          height="160%"
+          color-interpolation-filters="sRGB"
+        >
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="noise" />
+          <feComponentTransfer in="noise">
+            <feFuncR type="discrete" tableValues="0.05 0.15 0.5 0.85" />
+            <feFuncG type="discrete" tableValues="0.05 0.3 0.35 0.1" />
+            <feFuncB type="discrete" tableValues="0.55 0.75 0.3 0.6" />
+          </feComponentTransfer>
+        </filter>
+      </defs>
+      <circle class="bead-base" cx="60" cy="60" r="46" />
+      <g class="bead-grain">
+        <path d="M20 50 Q60 40 100 50" />
+        <path d="M18 65 Q60 78 102 65" />
+        <path d="M25 35 Q60 25 95 35" />
+      </g>
+      <circle
+        class="bead-marble"
+        cx="60"
+        cy="60"
+        r="46"
+        clip-path="url(#bead-clip)"
+        filter="url(#bead-marble-filter)"
+      />
+      <g class="bead-scratch">
+        <path d="M35 40 L85 80" />
+        <path d="M30 60 L90 55" />
+        <path d="M40 85 L80 35" />
+        <path d="M25 48 L95 68" />
+      </g>
+      <circle class="bead-ring1" cx="60" cy="60" r="52" />
+      <circle class="bead-ring2" cx="60" cy="60" r="58" />
+      <ellipse class="bead-sheen" cx="45" cy="42" rx="20" ry="12" />
+    </svg>
+    <p class="stage-label" data-testid="stage-label">Raw blank</p>
+    <div class="stage-dots" data-testid="stage-dots">
+      {STAGES.map((stage) => (
+        <span class="stage-dot" data-stage={stage.id}></span>
+      ))}
+    </div>
+    <input
+      type="range"
+      min="0"
+      max="100"
+      value="0"
+      data-testid="progress"
+      aria-label="Manufacturing progress"
+      class="visually-hidden"
+    />
   </main>
   <script src="../scripts/main.ts"></script>
 </Layout>

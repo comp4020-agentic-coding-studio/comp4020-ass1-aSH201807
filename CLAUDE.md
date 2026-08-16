@@ -153,6 +153,31 @@ means building legibly is part of building well.
 You don't need a name, a student number, or any identity file in the repo: we
 know whose repo it is. Spend the effort on the work.
 
+## Assignment 1: "The Shine Is Made of Time"
+
+Project-specific rules for this deliverable, on top of everything above.
+
+- **Core proposition**: the shine of a Chinese lacquer bead is accumulated
+  through repeated work and time.
+- **Core interaction**: horizontal user progress controls the manufacturing
+  state of one bead.
+- **Object continuity**: the bead must remain the same central object
+  throughout the interaction. Avoid implementing the experience as a sequence
+  of separate slides or unrelated images.
+- **Visual continuity**: the bead must preserve its visual identity across
+  state transitions. Progress should interpolate material properties (colour,
+  sheen, texture) where practical, rather than treating each named stage as an
+  unrelated replacement for the last — discrete per-stage jumps read as a
+  slideshow even when the underlying element never changes. The named stages
+  are reference points on that continuum, not the only states it can render.
+- **Scope**: communicate one idea through one primary mechanic. Do not add
+  unrelated history pages, galleries, quizzes, or secondary interaction
+  systems unless they directly support the core proposition.
+- **Interaction**: the visitor must actively control progress rather than
+  simply watch an automatic animation.
+- **Verification**: before accepting a change, run the relevant checks and
+  test the core interaction in the rendered page.
+
 ## This file is yours
 
 This CLAUDE.md is a starting point, not a fixed rulebook. As you learn what your

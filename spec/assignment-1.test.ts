@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { stageForProgress, STAGES } from "../src/scripts/main";
 
 // Assignment 1's published spec (see the course site), sorted:
 //
@@ -13,39 +14,31 @@ import { describe, expect, it } from "vitest";
 //     strong idea with a point of view, and nothing else" -> judged by a
 //     person at the crit, not mechanically checkable here.
 //
-// That leaves one line that needs a design decision before it can be a
+// That leaves one line that needed a design decision before it could be a
 // test:
 //
 //   "the visitor does something that changes what they see — state the
 //   core interaction plainly enough to write a test for it"
 //
-// Intentionally red until the interaction exists. Replace the TODO below
-// with the real thing: pick a `data-testid` (or similar hook) on the
-// control, load the built page with scripts running, fire the interaction,
-// and assert something visible actually changed.
-const NEXT_STEP =
-  "Name the interaction, give its control a stable hook (e.g. data-testid), " +
-  "and replace this assertion with one that fires it and checks the page " +
-  "actually changed. See the worked recipe below.";
-
+// The interaction: dragging (or keying) the `data-testid="progress"` range
+// input changes the bead's stage. The obvious way to assert that is to load
+// the built page with scripts running and dispatch an event on it — but
+// jsdom doesn't execute `<script type="module">` (Astro's build output for
+// this file), so that approach can never see main.ts run. Instead this
+// asserts the exported progress->stage mapping directly; the DOM-wiring half
+// of the contract (the right data-testid hooks exist) is already covered by
+// spec/bead-initial-state.test.ts.
 describe("core interaction", () => {
-  it("changes what the visitor sees", () => {
-    expect(false, NEXT_STEP).toBe(true);
+  it("starts at the raw stage", () => {
+    expect(stageForProgress(0).id).toBe("raw");
   });
 
-  // Worked recipe once you have a control to test:
-  //
-  // const distPath = resolve("dist/index.html");
-  // const dom = new JSDOM(readFileSync(distPath, "utf8"), {
-  //   runScripts: "dangerously",
-  //   resources: "usable",
-  //   url: "http://localhost/",
-  // });
-  // const { document } = dom.window;
-  // const before = document.querySelector('[data-testid="..."]')?.textContent;
-  // document.querySelector('[data-testid="..."]')?.dispatchEvent(
-  //   new dom.window.Event("click", { bubbles: true }),
-  // );
-  // const after = document.querySelector('[data-testid="..."]')?.textContent;
-  // expect(after).not.toBe(before);
+  it("ends at the finished stage", () => {
+    expect(stageForProgress(1).id).toBe("finished");
+  });
+
+  it("passes through every named stage as progress increases", () => {
+    const seen = STAGES.map((stage) => stageForProgress(stage.threshold).id);
+    expect(seen).toEqual(STAGES.map((stage) => stage.id));
+  });
 });

@@ -9,8 +9,115 @@ body {
 main {
   max-width: 40rem;
   margin: 0 auto;
+  cursor: ew-resize;
 }
 
 a {
   color: #0b5fff;
+}
+
+.bead {
+  width: 8rem;
+  height: 8rem;
+  margin: 2rem auto 1rem;
+  display: block;
+  overflow: visible;
+}
+
+.bead-base {
+  /* Raw tan -> dark lacquer as progress rises, then dulled toward grey during
+     the drying dip (see main.ts's dryness()) — one continuous surface, not a
+     swapped shape per stage. */
+  fill: color-mix(
+    in srgb,
+    #6b6560 calc(var(--dryness, 0) * 100%),
+    color-mix(in srgb, #4a1f12 calc(var(--progress, 0) * 100%), #d8c3a5)
+  );
+  stroke: color-mix(in srgb, #2e1a0d calc(var(--progress, 0) * 100%), #6b4a2b);
+  stroke-width: 4;
+}
+
+/* Bare-wood grain, visible on the raw blank, sanded away as lacquer builds up. */
+.bead-grain {
+  fill: none;
+  stroke: #8a6b45;
+  stroke-width: 1;
+  opacity: calc(1 - min(var(--progress, 0) * 3, 1));
+}
+
+/* An original, procedurally-generated marbled texture (inspired by the
+   general xipi/variegated-lacquer technique, not any specific reference) that
+   stays hidden under flat colour until sanding reveals it. */
+.bead-marble {
+  opacity: var(--marble, 0);
+  mix-blend-mode: multiply;
+}
+
+/* Fine scratching that sanding leaves behind, only removed by the final polish. */
+.bead-scratch {
+  fill: none;
+  stroke: #2e1a0d;
+  stroke-width: 0.6;
+  opacity: var(--scratch, 0);
+}
+
+/* Two rings read as accumulating lacquer layers seen in cross-section. */
+.bead-ring1,
+.bead-ring2 {
+  fill: none;
+  stroke-width: 2;
+}
+
+.bead-ring1 {
+  stroke: rgb(74 31 18 / var(--ring1, 0));
+}
+
+.bead-ring2 {
+  stroke: rgb(74 31 18 / var(--ring2, 0));
+}
+
+/* The shine that repeated sanding/lacquering passes gradually build up. */
+.bead-sheen {
+  fill: #fff;
+  opacity: calc(var(--sheen, 0) * 0.6);
+  filter: blur(6px);
+}
+
+.stage-label {
+  text-align: center;
+  font-weight: 600;
+}
+
+.stage-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 1rem 0;
+}
+
+.stage-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: #b3b3b3;
+}
+
+.stage-dot.active {
+  background: #4a1f12;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+main p {
+  cursor: text;
 }
