@@ -20,4 +20,17 @@ describe("initial bead state", () => {
     expect(control?.tagName).toBe("INPUT");
     expect(control?.getAttribute("type")).toBe("range");
   });
+
+  // The control is deliberately invisible (see styles/global.css's
+  // .visually-hidden) so it can't be eyeballed like the rest of the page — a
+  // future edit could add `disabled`, `hidden`, `tabindex="-1"`, or
+  // `aria-hidden="true"` and the rendered page would look exactly the same
+  // while a marker tabbing through it would silently lose keyboard access.
+  it("keeps the progress control keyboard-reachable", () => {
+    const control = doc.querySelector('[data-testid="progress"]');
+    expect(control?.hasAttribute("disabled")).toBe(false);
+    expect(control?.hasAttribute("hidden")).toBe(false);
+    expect(control?.getAttribute("tabindex")).not.toBe("-1");
+    expect(control?.getAttribute("aria-hidden")).not.toBe("true");
+  });
 });
