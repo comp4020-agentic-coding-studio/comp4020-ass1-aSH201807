@@ -160,16 +160,36 @@ Project-specific rules for this deliverable, on top of everything above.
 - **Core proposition**: the shine of a Chinese lacquer bead is accumulated
   through repeated work and time.
 - **Core interaction**: horizontal user progress controls the manufacturing
-  state of one bead.
+  state of one bead, driven by a single continuous progress value (never a
+  discrete stage index) — every visible change, whether a CSS custom property
+  or an image cross-fade, derives from that one number.
 - **Object continuity**: the bead must remain the same central object
-  throughout the interaction. Avoid implementing the experience as a sequence
-  of separate slides or unrelated images.
+  throughout the interaction — exactly one element carries
+  `data-testid="bead"` for the whole experience (`spec/bead-initial-state.test.ts`
+  asserts this). Per-stage artwork is allowed; a sequence of separate slides or
+  unrelated images is not — see Visual continuity below for what separates the
+  two.
 - **Visual continuity**: the bead must preserve its visual identity across
   state transitions. Progress should interpolate material properties (colour,
   sheen, texture) where practical, rather than treating each named stage as an
   unrelated replacement for the last — discrete per-stage jumps read as a
   slideshow even when the underlying element never changes. The named stages
   are reference points on that continuum, not the only states it can render.
+  Where a stage is represented by artwork rather than a parametric property,
+  continuity means cross-fading between the two nearest stage images as
+  progress crosses their boundary — one image gradually becoming the next —
+  never a hard cut.
+- **Stage sequence**: the eight manufacturing stages — Selecting the Blank,
+  Applying the Base Coat, Building Up the Lacquer, Layering the Lacquer,
+  Curing in the Shade, Sanding to Reveal, Revealing the Layers, Final
+  Polishing — are defined once, as the exported `STAGES` array in
+  `src/scripts/main.ts`. That array (names, thresholds, and per-stage image
+  references) is the single source of truth — don't restate the stage count
+  or names anywhere else (markup, tests, comments); read them from there.
+  Sanding to Reveal and Revealing the Layers are deliberately two separate
+  stages, not a near-duplicate: they represent sanding into the surface and
+  the marbled inner layers becoming visible as two distinct moments in the
+  same continuous action. Don't merge them back into one.
 - **Scope**: communicate one idea through one primary mechanic. Do not add
   unrelated history pages, galleries, quizzes, or secondary interaction
   systems unless they directly support the core proposition.
