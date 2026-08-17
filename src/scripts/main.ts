@@ -1,21 +1,32 @@
-// Single source of truth for what "progress" means: a fraction from 0 (raw
-// blank) to 1 (finished), in threshold order. Every visible change derives
-// from this one list — see CLAUDE.md's "Assignment 1" section.
+// Single source of truth for what "progress" means: a fraction from 0
+// (selecting the blank) to 1 (final polishing), in threshold order. Every
+// visible change — including which two stage images are cross-fading —
+// derives from this one list — see CLAUDE.md's "Assignment 1" section.
 //
 // Exported so spec/assignment-1.test.ts can assert the mapping directly:
 // jsdom doesn't execute `<script type="module">` (Astro's build output for
 // this file), so a test can't drive this through the rendered page's own
 // script the way spec/bead-initial-state.test.ts drives static markup.
-export type Stage = { id: string; label: string; threshold: number };
+export type Stage = { id: string; label: string; threshold: number; image: ImageMetadata };
+
+import selectingTheBlank from "../assets/bead-stages/01-selecting-the-blank.png";
+import applyingTheBaseCoat from "../assets/bead-stages/02-applying-the-base-coat.png";
+import buildingUpTheLacquer from "../assets/bead-stages/03-building-up-the-lacquer.png";
+import layeringTheLacquer from "../assets/bead-stages/04-layering-the-lacquer.png";
+import curingInTheShade from "../assets/bead-stages/05-curing-in-the-shade.png";
+import sandingToReveal from "../assets/bead-stages/06-sanding-to-reveal.png";
+import revealingTheLayers from "../assets/bead-stages/07-revealing-the-layers.png";
+import finalPolishing from "../assets/bead-stages/08-final-polishing.png";
 
 export const STAGES: Stage[] = [
-  { id: "raw", label: "Raw blank", threshold: 0 },
-  { id: "surface-prep", label: "Surface preparation", threshold: 0.1 },
-  { id: "lacquering", label: "Lacquering", threshold: 0.25 },
-  { id: "drying", label: "Drying", threshold: 0.4 },
-  { id: "sanding", label: "Sanding", threshold: 0.55 },
-  { id: "repeated", label: "Repeated lacquering & sanding", threshold: 0.7 },
-  { id: "finished", label: "Final polishing", threshold: 0.9 },
+  { id: "selecting-the-blank", label: "Selecting the Blank", threshold: 0, image: selectingTheBlank },
+  { id: "applying-the-base-coat", label: "Applying the Base Coat", threshold: 0.12, image: applyingTheBaseCoat },
+  { id: "building-up-the-lacquer", label: "Building Up the Lacquer", threshold: 0.25, image: buildingUpTheLacquer },
+  { id: "layering-the-lacquer", label: "Layering the Lacquer", threshold: 0.38, image: layeringTheLacquer },
+  { id: "curing-in-the-shade", label: "Curing in the Shade", threshold: 0.5, image: curingInTheShade },
+  { id: "sanding-to-reveal", label: "Sanding to Reveal", threshold: 0.62, image: sandingToReveal },
+  { id: "revealing-the-layers", label: "Revealing the Layers", threshold: 0.75, image: revealingTheLayers },
+  { id: "final-polishing", label: "Final Polishing", threshold: 0.88, image: finalPolishing },
 ];
 
 export function stageForProgress(progress: number): Stage {
@@ -25,47 +36,35 @@ export function stageForProgress(progress: number): Stage {
   );
 }
 
-// Continuous visual parameters derived from progress, so the bead's material
-// interpolates rather than jumping per named stage (see CLAUDE.md's "Visual
-// continuity" rule). Each communicates one of the three required cues:
-//   - layersProgress / ring opacities -> the surface gaining layers and colour
-//   - dryness -> waiting/drying as a distinct, passive zone
-//   - sheen -> repeated work gradually building depth and shine
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));
 }
 
-function rampUp(progress: number, start: number, end: number): number {
-  return clamp01((progress - start) / (end - start));
-}
+// Cross-fade weights for every stage's image, keyed by stage id (see
+// CLAUDE.md's "Visual continuity" rule): only the current stage and the next
+// one ever have non-zero opacity, blending linearly across the gap between
+// their thresholds so one image gradually becomes the next rather than
+// hard-cutting.
+function layerOpacities(progress: number): Record<string, number> {
+  const opacities: Record<string, number> = {};
+  for (const stage of STAGES) opacities[stage.id] = 0;
 
-// A trapezoid: zero outside the drying stage, full across its plateau, with
-// short ramps in and out either side — a dip in vibrancy, not a hard cut.
-function dryness(progress: number): number {
-  return Math.min(rampUp(progress, 0.34, 0.4), 1 - rampUp(progress, 0.55, 0.61));
-}
+  let i = 0;
+  for (let k = 0; k < STAGES.length; k++) {
+    if (progress >= STAGES[k].threshold) i = k;
+  }
 
-// Near-zero until sanding starts; ramps toward full shine by the end, with a
-// small step added per pass through the "repeated" band so each pass reads as
-// a distinct addition rather than one smooth fade.
-function sheen(progress: number): number {
-  const base = rampUp(progress, 0.55, 1);
-  const passes = Math.floor(rampUp(progress, 0.7, 0.9) * 3) * 0.05;
-  return Math.min(1, base + passes);
-}
+  if (i === STAGES.length - 1) {
+    opacities[STAGES[i].id] = 1;
+    return opacities;
+  }
 
-// Visible fine scratching appears once sanding starts, stays through the
-// repeated passes, and is only removed by the final polish — the texture
-// that repeated work leaves behind until the last step smooths it away.
-function scratchiness(progress: number): number {
-  return Math.min(rampUp(progress, 0.5, 0.58), 1 - rampUp(progress, 0.85, 1));
-}
-
-// The marbled cross-section built up by repeated colour coats stays hidden
-// under flat colour until sanding cuts into it, then sharpens into full
-// clarity by the final polish — sanding reveals depth that was already there.
-function marbleVisibility(progress: number): number {
-  return rampUp(progress, 0.55, 0.75);
+  const start = STAGES[i].threshold;
+  const end = STAGES[i + 1].threshold;
+  const t = clamp01((progress - start) / (end - start));
+  opacities[STAGES[i].id] = 1 - t;
+  opacities[STAGES[i + 1].id] = t;
+  return opacities;
 }
 
 // Guarded so this file can be imported for its pure exports above (see
@@ -73,6 +72,7 @@ function marbleVisibility(progress: number): number {
 if (typeof document !== "undefined") {
   const progressInput = document.querySelector<HTMLInputElement>('[data-testid="progress"]');
   const bead = document.querySelector<HTMLElement>('[data-testid="bead"]');
+  const beadLayers = document.querySelectorAll<HTMLElement>(".bead-layer");
   const stageLabel = document.querySelector<HTMLElement>('[data-testid="stage-label"]');
   const stageDots = document.querySelectorAll<HTMLElement>(".stage-dot");
   const dragHint = document.querySelector<HTMLElement>(".drag-hint");
@@ -80,15 +80,11 @@ if (typeof document !== "undefined") {
 
   const applyProgress = (progress: number) => {
     const stage = stageForProgress(progress);
-    if (bead) {
-      bead.dataset.stage = stage.id;
-      bead.style.setProperty("--progress", progress.toFixed(4));
-      bead.style.setProperty("--dryness", dryness(progress).toFixed(4));
-      bead.style.setProperty("--sheen", sheen(progress).toFixed(4));
-      bead.style.setProperty("--ring1", rampUp(progress, 0.18, 0.32).toFixed(4));
-      bead.style.setProperty("--ring2", rampUp(progress, 0.65, 0.85).toFixed(4));
-      bead.style.setProperty("--scratch", scratchiness(progress).toFixed(4));
-      bead.style.setProperty("--marble", marbleVisibility(progress).toFixed(4));
+    if (bead) bead.dataset.stage = stage.id;
+    const opacities = layerOpacities(progress);
+    for (const layer of beadLayers) {
+      const id = layer.dataset.stage;
+      layer.style.opacity = id ? String(opacities[id] ?? 0) : "0";
     }
     if (stageLabel) stageLabel.textContent = stage.label;
     for (const dot of stageDots) {

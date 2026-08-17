@@ -84,10 +84,26 @@ main > p {
 }
 
 .bead {
+  position: relative;
   width: 100%;
   height: 100%;
   display: block;
-  overflow: visible;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+/* Per-stage artwork, stacked and cross-faded by main.ts's layerOpacities()
+   as progress crosses each stage boundary — never a hard swap (see
+   CLAUDE.md's "Visual continuity" rule). The transition only smooths
+   keyboard's 1%-step jumps; drag already drives continuous opacity values. */
+.bead-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: opacity 0.15s linear;
 }
 
 /* Purely decorative first-look affordance --- aria-hidden and pointer-events:
@@ -146,65 +162,6 @@ main > p {
     animation: none;
     opacity: 0.35;
   }
-}
-
-.bead-base {
-  /* Raw tan -> dark lacquer as progress rises, then dulled toward grey during
-     the drying dip (see main.ts's dryness()) — one continuous surface, not a
-     swapped shape per stage. */
-  fill: color-mix(
-    in srgb,
-    #6b6560 calc(var(--dryness, 0) * 100%),
-    color-mix(in srgb, #4a1f12 calc(var(--progress, 0) * 100%), #d8c3a5)
-  );
-  stroke: color-mix(in srgb, #2e1a0d calc(var(--progress, 0) * 100%), #6b4a2b);
-  stroke-width: 4;
-}
-
-/* Bare-wood grain, visible on the raw blank, sanded away as lacquer builds up. */
-.bead-grain {
-  fill: none;
-  stroke: #8a6b45;
-  stroke-width: 1;
-  opacity: calc(1 - min(var(--progress, 0) * 3, 1));
-}
-
-/* An original, procedurally-generated marbled texture (inspired by the
-   general xipi/variegated-lacquer technique, not any specific reference) that
-   stays hidden under flat colour until sanding reveals it. */
-.bead-marble {
-  opacity: var(--marble, 0);
-  mix-blend-mode: multiply;
-}
-
-/* Fine scratching that sanding leaves behind, only removed by the final polish. */
-.bead-scratch {
-  fill: none;
-  stroke: #2e1a0d;
-  stroke-width: 0.6;
-  opacity: var(--scratch, 0);
-}
-
-/* Two rings read as accumulating lacquer layers seen in cross-section. */
-.bead-ring1,
-.bead-ring2 {
-  fill: none;
-  stroke-width: 2;
-}
-
-.bead-ring1 {
-  stroke: rgb(74 31 18 / var(--ring1, 0));
-}
-
-.bead-ring2 {
-  stroke: rgb(74 31 18 / var(--ring2, 0));
-}
-
-/* The shine that repeated sanding/lacquering passes gradually build up. */
-.bead-sheen {
-  fill: #fff;
-  opacity: calc(var(--sheen, 0) * 0.6);
-  filter: blur(6px);
 }
 
 .stage-label {

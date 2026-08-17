@@ -9,10 +9,10 @@ const distPath = resolve("dist/index.html");
 const doc = new JSDOM(readFileSync(distPath, "utf8")).window.document;
 
 describe("initial bead state", () => {
-  it("has exactly one bead, starting raw", () => {
+  it("has exactly one bead, starting at selecting-the-blank", () => {
     const beads = doc.querySelectorAll('[data-testid="bead"]');
     expect(beads).toHaveLength(1);
-    expect(beads[0].getAttribute("data-stage")).toBe("raw");
+    expect(beads[0].getAttribute("data-stage")).toBe("selecting-the-blank");
   });
 
   it("has one horizontal progress control", () => {

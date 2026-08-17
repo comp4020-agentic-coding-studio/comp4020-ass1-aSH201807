@@ -29,12 +29,12 @@ import { stageForProgress, STAGES } from "../src/scripts/main";
 // of the contract (the right data-testid hooks exist) is already covered by
 // spec/bead-initial-state.test.ts.
 describe("core interaction", () => {
-  it("starts at the raw stage", () => {
-    expect(stageForProgress(0).id).toBe("raw");
+  it("starts at the selecting-the-blank stage", () => {
+    expect(stageForProgress(0).id).toBe("selecting-the-blank");
   });
 
-  it("ends at the finished stage", () => {
-    expect(stageForProgress(1).id).toBe("finished");
+  it("ends at the final-polishing stage", () => {
+    expect(stageForProgress(1).id).toBe("final-polishing");
   });
 
   it("passes through every named stage as progress increases", () => {
