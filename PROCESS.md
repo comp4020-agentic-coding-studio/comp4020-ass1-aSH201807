@@ -91,6 +91,27 @@ functions of a single `progress` value.
    shared state rather than resetting or diverging.
    [`ebfb5b5`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/ebfb5b5)
 
+6. **A retired test can still be doing its job by being gone.** Asked to
+   replace the starter-specific test with project-specific contracts, I
+   checked `spec/starter.test.ts` first rather than assuming it still needed
+   work --- it had already been deleted in the very first interaction commit,
+   the moment the starter page it described stopped existing. Re-reading
+   `spec/bead-initial-state.test.ts` and `spec/assignment-1.test.ts` against
+   the checklist (bead exists, progress control exists, a defined initial
+   state, a reachable finished state) showed those were already covered, so
+   adding tests for them again would have been duplicate coverage, not new
+   protection. The one real gap was keyboard reachability: nothing asserted
+   that the progress control stays tab-reachable. Because the control is
+   deliberately invisible (`.visually-hidden`, not `display:none`), a future
+   edit adding `disabled`, `hidden`, `tabindex="-1"`, or `aria-hidden="true"`
+   would silently break Tab access while the rendered page looked identical
+   --- exactly the failure a marker tabbing through the deployed prototype
+   would hit and a visual check would miss. jsdom can't execute the module
+   script or compute real focus, but it can assert those markup attributes
+   are absent from the built HTML, so that's the one test I added.
+   `pnpm check` stayed green at 21/21 tests.
+   [`350da55`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/350da55)
+
 ## Before you ship
 
 `pnpm check:evidence` verifies your citations resolve to real commits, that the
