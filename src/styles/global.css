@@ -162,6 +162,16 @@ a {
   border: 0;
 }
 
+/* The range input is the one control behind progress --- clipped to 1px by
+   .visually-hidden above, so its own focus ring would be imperceptible.
+   Tabbing to it still moves real keyboard focus, so show that focus on the
+   bead it drives instead of on the invisible input itself. */
+.interaction:focus-within .bead {
+  outline: 3px solid #0b5fff;
+  outline-offset: 6px;
+  border-radius: 50%;
+}
+
 main p {
   cursor: text;
 }

@@ -92,6 +92,7 @@ if (typeof document !== "undefined") {
     for (const dot of stageDots) {
       dot.classList.toggle("active", dot.dataset.stage === stage.id);
     }
+    progressInput?.setAttribute("aria-valuetext", stage.label);
   };
 
   if (progressInput) {
