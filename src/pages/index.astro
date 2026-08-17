@@ -12,18 +12,24 @@ import { STAGES } from "../scripts/main";
   <main>
     <h1>The Shine Is Made of Time</h1>
     <p>
-      Move the slider to work one bead through the stages of Chinese lacquer
-      work, from a raw blank to a finished, polished shine.
+      Drag the bead left and right to work it through the stages of Chinese
+      lacquer work, from a raw blank to a finished, polished shine.
     </p>
     <div class="interaction">
-      <svg
-        class="bead"
-        data-testid="bead"
-        data-stage="raw"
-        viewBox="0 0 120 120"
-        role="img"
-        aria-label="A lacquer bead, its surface changing as progress advances"
-      >
+      <div class="bead-wrap">
+        <div class="drag-hint" aria-hidden="true">
+          <span class="drag-hint-ring"></span>
+          <span class="drag-hint-ring drag-hint-ring-delay"></span>
+          <span class="drag-hint-label">Drag</span>
+        </div>
+        <svg
+          class="bead"
+          data-testid="bead"
+          data-stage="raw"
+          viewBox="0 0 120 120"
+          role="img"
+          aria-label="A lacquer bead, its surface changing as progress advances"
+        >
         <defs>
           <clipPath id="bead-clip">
             <circle cx="60" cy="60" r="46" />
@@ -67,7 +73,8 @@ import { STAGES } from "../scripts/main";
         <circle class="bead-ring1" cx="60" cy="60" r="52" />
         <circle class="bead-ring2" cx="60" cy="60" r="58" />
         <ellipse class="bead-sheen" cx="45" cy="42" rx="20" ry="12" />
-      </svg>
+        </svg>
+      </div>
       <p class="stage-label" data-testid="stage-label">Raw blank</p>
       <div class="stage-dots" data-testid="stage-dots">
         {STAGES.map((stage) => (

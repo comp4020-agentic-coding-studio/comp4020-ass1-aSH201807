@@ -75,6 +75,8 @@ if (typeof document !== "undefined") {
   const bead = document.querySelector<HTMLElement>('[data-testid="bead"]');
   const stageLabel = document.querySelector<HTMLElement>('[data-testid="stage-label"]');
   const stageDots = document.querySelectorAll<HTMLElement>(".stage-dot");
+  const dragHint = document.querySelector<HTMLElement>(".drag-hint");
+  const dismissDragHint = () => dragHint?.classList.add("drag-hint-dismissed");
 
   const applyProgress = (progress: number) => {
     const stage = stageForProgress(progress);
@@ -98,6 +100,7 @@ if (typeof document !== "undefined") {
   if (progressInput) {
     applyProgress(Number(progressInput.value) / 100);
     progressInput.addEventListener("input", () => {
+      dismissDragHint();
       applyProgress(Number(progressInput.value) / 100);
     });
 
@@ -114,6 +117,7 @@ if (typeof document !== "undefined") {
     main?.addEventListener("pointerdown", (event) => {
       const target = event.target as HTMLElement;
       if (target.closest("p")) return; // leave text selectable/readable
+      dismissDragHint();
       lastClientX = event.clientX;
       main.setPointerCapture(event.pointerId);
       event.preventDefault();
