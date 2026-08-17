@@ -112,6 +112,38 @@ functions of a single `progress` value.
    `pnpm check` stayed green at 21/21 tests.
    [`350da55`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/350da55)
 
+7. **Rights need establishing before a third-party image enters a soon-public
+   repo, not verified after the fact.** Mid-session I was asked to use a
+   specific lacquer/lotus photo, carrying a visible "时代记忆-非遗" watermark, as
+   the page background. Cropping the watermark out and asking again didn't
+   change the underlying question, so I declined twice and asked directly
+   whether the requester held rights to the image, offering an original
+   CSS/SVG crackle-texture alternative in the same palette instead --- which
+   was used first. Only after an explicit "我有权使用" (I have the right to use
+   it) did I copy the actual photo into `src/assets/` and wire it up with a
+   dark scrim for text legibility, since the repo goes public at the
+   deadline and an unverified image there is a real risk, not a hypothetical
+   one. Also folded in that pass: switching to `box-sizing: border-box` and a
+   fixed `100dvh` body height so the page fits one viewport without
+   scrolling, which the earlier `min-height: 100vh` didn't guarantee.
+   [`211c158`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/211c158)
+
+8. **A working interaction can still be an invisible one.** The drag has
+   worked since the first commit, but nothing on the page told a first-time
+   visitor to drag the bead itself --- the intro paragraph said "move the
+   slider" while the actual `<input type="range">` is deliberately hidden,
+   and the bead's own affordance (an `ew-resize` cursor) only shows up once
+   the pointer is already over it. I reworded the paragraph to name the bead
+   directly, then added a purely decorative pulsing-ring and "Drag" label as
+   a first-look hint: `aria-hidden` and `pointer-events: none` so it never
+   reaches assistive tech or intercepts the drag it's advertising, dismissed
+   permanently on the first pointer or keyboard interaction, and inert under
+   `prefers-reduced-motion`. Verified with `pnpm check` (21/21 tests, build,
+   and lint all green) --- I haven't yet driven this in an actual browser
+   this session, so the ring sizing and timing at the 390×844 viewport are
+   still worth a manual look before shipping.
+   [`6143f12`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/6143f12)
+
 ## Before you ship
 
 `pnpm check:evidence` verifies your citations resolve to real commits, that the
