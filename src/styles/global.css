@@ -76,10 +76,14 @@ main > p {
   text-align: center;
 }
 
+/* 14rem is the phone-viewport floor (390px wide, unchanged from before);
+   22vw only overtakes it on wider viewports, so the bead grows continuously
+   with page width there, capped at 24rem and by 34dvh so it never overflows
+   a short viewport. */
 .bead-wrap {
   position: relative;
-  width: min(8rem, 22dvh);
-  height: min(8rem, 22dvh);
+  width: min(clamp(14rem, 22vw, 24rem), 34dvh);
+  height: min(clamp(14rem, 22vw, 24rem), 34dvh);
   margin: 2rem auto 1rem;
 }
 
