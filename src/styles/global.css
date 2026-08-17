@@ -146,10 +146,9 @@ main > p {
 
 .drag-hint-label {
   position: relative;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: Yellowtail, "Segoe Script", cursive;
+  font-size: 1.3rem;
+  font-weight: 400;
   color: #f7ece0;
   text-shadow: 0 1px 3px rgb(0 0 0 / 45%);
 }
