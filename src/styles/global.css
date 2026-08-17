@@ -112,10 +112,13 @@ main > p {
 
 /* Purely decorative first-look affordance --- aria-hidden and pointer-events:
    none so it never intercepts the drag it's advertising or reaches assistive
-   tech, which already gets the drag instruction from the intro paragraph. */
+   tech, which already gets the drag instruction from the intro paragraph.
+   z-index guarantees it paints in front of the bead's stacked image layers
+   from the very start, rather than relying on DOM order alone. */
 .drag-hint {
   position: absolute;
   inset: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -123,7 +126,9 @@ main > p {
   transition: opacity 0.4s ease;
 }
 
-.drag-hint-dismissed {
+/* Hidden only while a drag is actively in progress --- reappears once it
+   ends (see main.ts's showDragHintRing). */
+.drag-hint-hidden {
   opacity: 0;
 }
 
@@ -147,6 +152,13 @@ main > p {
   text-transform: uppercase;
   color: #f7ece0;
   text-shadow: 0 1px 3px rgb(0 0 0 / 45%);
+}
+
+/* Once any interaction has happened, the "Drag" label never shows again ---
+   only the pulsing ring keeps recurring between drags as a standing
+   affordance, not a one-time tip. */
+.drag-hint-used .drag-hint-label {
+  display: none;
 }
 
 @keyframes drag-hint-pulse {

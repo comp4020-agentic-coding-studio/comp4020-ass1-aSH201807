@@ -76,7 +76,17 @@ if (typeof document !== "undefined") {
   const stageLabel = document.querySelector<HTMLElement>('[data-testid="stage-label"]');
   const stageDots = document.querySelectorAll<HTMLElement>(".stage-dot");
   const dragHint = document.querySelector<HTMLElement>(".drag-hint");
-  const dismissDragHint = () => dragHint?.classList.add("drag-hint-dismissed");
+  // The "Drag" label is a first-look-only affordance: once any interaction
+  // has happened, .drag-hint-used hides it for good. The ring underneath it
+  // keeps recurring, though — hidden while a drag is in progress, faded back
+  // in (label-less) once it ends, so it stays a standing hint rather than a
+  // one-time tip.
+  const markDragHintUsed = () => dragHint?.classList.add("drag-hint-used");
+  const hideDragHint = () => dragHint?.classList.add("drag-hint-hidden");
+  const showDragHintRing = () => {
+    markDragHintUsed();
+    dragHint?.classList.remove("drag-hint-hidden");
+  };
 
   const applyProgress = (progress: number) => {
     const stage = stageForProgress(progress);
@@ -96,7 +106,7 @@ if (typeof document !== "undefined") {
   if (progressInput) {
     applyProgress(Number(progressInput.value) / 100);
     progressInput.addEventListener("input", () => {
-      dismissDragHint();
+      markDragHintUsed();
       applyProgress(Number(progressInput.value) / 100);
     });
 
@@ -109,11 +119,13 @@ if (typeof document !== "undefined") {
     const main = document.querySelector("main");
     const POINTS_PER_PIXEL = 0.2;
     let lastClientX = 0;
+    let isDragging = false;
 
     main?.addEventListener("pointerdown", (event) => {
       const target = event.target as HTMLElement;
       if (target.closest("p")) return; // leave text selectable/readable
-      dismissDragHint();
+      isDragging = true;
+      hideDragHint();
       lastClientX = event.clientX;
       main.setPointerCapture(event.pointerId);
       event.preventDefault();
@@ -127,5 +139,13 @@ if (typeof document !== "undefined") {
       progressInput.value = String(next);
       progressInput.dispatchEvent(new Event("input", { bubbles: true }));
     });
+
+    const endDrag = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      showDragHintRing();
+    };
+    main?.addEventListener("pointerup", endDrag);
+    main?.addEventListener("pointercancel", endDrag);
   }
 }
