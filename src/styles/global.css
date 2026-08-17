@@ -28,6 +28,12 @@ main {
   width: 100%;
   display: flex;
   flex-direction: column;
+
+  /* Let the browser keep handling vertical scroll natively, but stop it
+     claiming horizontal touch drags for its own panning/zoom gestures --- the
+     same drag distance/direction logic below is what a touch pointer drives,
+     so it needs the delivered pointermove events, not a browser-owned pan. */
+  touch-action: pan-y;
 }
 
 /* Bead, stage label, dots and the hidden progress input, held together so the
