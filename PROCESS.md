@@ -144,6 +144,39 @@ functions of a single `progress` value.
    still worth a manual look before shipping.
    [`6143f12`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/6143f12)
 
+9. **Correcting the harness before writing code prevented shipping a
+   contradiction.** Asked to replace the bead's CSS/SVG visuals with eight
+   hand-drawn stage images, I re-read `CLAUDE.md` before touching any code and
+   found it actively contradicted the request: "Object continuity" said to
+   avoid a sequence of separate images, and `STAGES` was pinned at seven
+   entries against the eight now agreed. Rather than write integration code
+   that would immediately violate the file directing it, I fixed the harness
+   first — `STAGES` in `main.ts` became the documented source of truth for
+   names, thresholds, *and* per-stage image references, and cross-fading
+   between stage artwork became the required form of continuity instead of a
+   hard swap. I checked this was a real conflict and not an imagined one by
+   grepping `CLAUDE.md` for stage-count language before proposing the fix.
+   [`ff8dcbe`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/ff8dcbe)
+
+10. **A rendering strategy can change completely without breaking the DOM
+    contract that tests depend on.** Replacing the procedural SVG with eight
+    images meant the bead was no longer one element with CSS-driven
+    properties — it became a stack of `<img>` layers. `spec/bead-initial-state.test.ts`
+    only ever asserted *one* `data-testid="bead"` element exists, not that
+    it's an `<svg>`, so I kept that contract by making the images children of
+    a single wrapping `data-testid="bead"` div and adding a `layerOpacities()`
+    function that cross-fades exactly the current and next stage's images as
+    progress crosses their threshold — never a hard cut. Stage ids also moved
+    from placeholder terms (`raw`, `finished`) to the current vocabulary
+    (`selecting-the-blank`, `final-polishing`), which meant deliberately
+    updating the two spec assertions that hardcoded the old ids, rather than
+    quietly preserving stale terminology the tests would no longer describe
+    accurately. Verified with `pnpm check` (21/21 tests, build and lint clean)
+    and Playwright driving the live dev server at both 1920×1080 and 390×844:
+    exactly one bead element, and cross-fade opacities that interpolate
+    correctly through every one of the eight stage boundaries.
+    [`a61f207`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/a61f207)
+
 ## Before you ship
 
 `pnpm check:evidence` verifies your citations resolve to real commits, that the
