@@ -177,6 +177,26 @@ functions of a single `progress` value.
     correctly through every one of the eight stage boundaries.
     [`a61f207`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/a61f207)
 
+11. **The cross-fade architecture paid for itself on the next four unrelated
+    requests.** A run of small, separately-requested fixes — two stage images
+    that had been copied in swapped, the bead's fixed size becoming a
+    continuous `clamp()`/`vw` formula instead of a breakpoint jump, the
+    one-time "Drag" hint becoming a recurring ring-only affordance between
+    drags, and its label's font matching the page's display typeface — each
+    touched only content or presentation, never `stageForProgress` or
+    `layerOpacities`. That's the direct payoff of moment 9's decision to make
+    `STAGES` the single source of truth: swapping which file backs an id is a
+    data fix, not a logic fix, and reshaping the hint's own state machine
+    couldn't touch the progress model because the two were never coupled. I
+    checked each change the same way — `pnpm check` green at 21/21, then
+    Playwright screenshots of the rendered page at both required viewports —
+    and used the same Playwright pass to catch a case the code alone couldn't
+    show: an apparently-wrong bead colour in one screenshot turned out to be a
+    `.bead-layer` opacity transition still mid-flight at capture time, not a
+    real opacity bug, which I only ruled out by reading the actual computed
+    inline styles rather than trusting the logic that set them.
+    [`dc1fda3...1f6fee0`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/compare/dc1fda3...1f6fee0)
+
 ## Before you ship
 
 `pnpm check:evidence` verifies your citations resolve to real commits, that the
