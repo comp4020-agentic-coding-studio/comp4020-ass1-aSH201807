@@ -1,3 +1,9 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html,
 body {
   height: 100%;
@@ -8,16 +14,20 @@ body {
   padding: 2rem;
   font-family: "Noto Serif SC", Georgia, serif;
   line-height: 1.6;
-  color: #1a1a1a;
-  min-height: 100vh;
+  color: #f7ece0;
+  height: 100dvh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  background-color: #f7f4ea;
+  background-color: #3a0f0a;
 
-  /* An original, tileable ruyi-cloud motif in jade green on paper cream --- a
-     traditional decorative pattern family, not a copy of any one source. */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Crect width='90' height='90' fill='%23f7f4ea'/%3E%3Cpath d='M6 66 Q18 50 34 60 Q46 44 62 54 Q74 44 84 54' fill='none' stroke='%233a6f52' stroke-width='2' stroke-linecap='round' opacity='0.3'/%3E%3Cpath d='M-4 24 Q8 8 24 18 Q36 2 52 12 Q64 2 76 12' fill='none' stroke='%233a6f52' stroke-width='2' stroke-linecap='round' opacity='0.22'/%3E%3C/svg%3E");
-  background-repeat: repeat;
+  /* Lacquer lotus photo, used with the rights holder's permission. The dark
+     scrim keeps body text readable over the photo's lighter petal areas. */
+  background-image: linear-gradient(rgb(45 10 7 / 60%), rgb(45 10 7 / 60%)),
+    url("../assets/lotus-lacquer-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 main {
@@ -25,6 +35,7 @@ main {
   margin: 0 auto;
   cursor: ew-resize;
   flex: 1;
+  min-height: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -41,6 +52,7 @@ main {
    remaining page height. */
 .interaction {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -52,17 +64,21 @@ h1 {
   font-weight: 400;
   font-size: 2.75rem;
   text-align: center;
-  color: #2f5a42;
+  color: #5cc98c;
   letter-spacing: 0.02em;
 }
 
 a {
-  color: #0b5fff;
+  color: #ffe6a8;
+}
+
+main > p {
+  text-align: center;
 }
 
 .bead {
-  width: 8rem;
-  height: 8rem;
+  width: min(8rem, 22dvh);
+  height: min(8rem, 22dvh);
   margin: 2rem auto 1rem;
   display: block;
   overflow: visible;
@@ -147,7 +163,7 @@ a {
 }
 
 .stage-dot.active {
-  background: #4a1f12;
+  background: #8fe0ac;
 }
 
 .visually-hidden {
@@ -167,7 +183,7 @@ a {
    Tabbing to it still moves real keyboard focus, so show that focus on the
    bead it drives instead of on the invisible input itself. */
 .interaction:focus-within .bead {
-  outline: 3px solid #0b5fff;
+  outline: 3px solid #f7ece0;
   outline-offset: 6px;
   border-radius: 50%;
 }
