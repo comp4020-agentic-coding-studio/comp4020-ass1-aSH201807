@@ -69,6 +69,28 @@ functions of a single `progress` value.
    change to the drag logic, the stage sequence, or the visual model.
    [`77c4b36`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/77c4b36)
 
+5. **The right control already existed --- the gap was making its state
+   visible.** Asked to add keyboard access without a second interaction
+   system, I inspected the DOM before writing anything: the drag handler was
+   already backed by a real `<input type="range">`, hidden only visually via
+   `.visually-hidden`, and already the single source of truth that pointer
+   drags write to and read from via its shared `"input"` event. A native
+   range input is tab-focusable and already handles ArrowLeft/ArrowRight and
+   Home/End as min/max jumps for free, so there was no new control to build
+   and no separate state to keep in sync --- keyboard, pointer, and touch were
+   already going to converge on the same value. The one real gap was that its
+   native focus ring was clipped to invisible by the same 1px hiding that
+   keeps it out of the visual layout. I added a `:focus-within` outline on
+   the bead itself, so tabbing to the hidden input shows focus on the thing
+   it visibly drives, plus `aria-valuetext` so assistive tech announces the
+   stage name instead of a bare number. Verified with Playwright driving real
+   Tab/Arrow/Home/End key presses against both the local build and the live
+   deployed URL at both required viewports --- confirming the focus outline
+   renders, the key-by-key progress sequence matches expectations, and a
+   pointer drag issued right after a keyboard `Home` continues from the same
+   shared state rather than resetting or diverging.
+   [`ebfb5b5`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/ebfb5b5)
+
 ## Before you ship
 
 `pnpm check:evidence` verifies your citations resolve to real commits, that the
