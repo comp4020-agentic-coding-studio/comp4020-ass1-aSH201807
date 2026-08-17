@@ -53,6 +53,22 @@ functions of a single `progress` value.
    then looked at the rendered page.
    [`49e07ca`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/49e07ca)
 
+4. **Working pointer code isn't the same as working touch code.** After
+   shipping, I re-tested the required 390×844 viewport specifically for
+   touch, since the drag was only ever driven and demoed with a mouse. The
+   `pointerdown`/`pointermove` handler already used the unified Pointer
+   Events API, so I assumed touch was covered for free --- but `main` had no
+   `touch-action` set, and the browser was claiming horizontal swipes for its
+   own scroll-gesture recognition before handing full deltas to
+   `pointermove`. I didn't take that on faith: I drove real CDP-level touch
+   events against the same 200px swipe with and without the fix and measured
+   the resulting progress value. Without `touch-action: pan-y`, the swipe
+   only reached progress 4; with it, the same swipe reached 40, matching
+   desktop's pixel-to-progress ratio, while vertical scrolling and the
+   absence of horizontal page overflow were unaffected. One CSS line, no
+   change to the drag logic, the stage sequence, or the visual model.
+   [`77c4b36`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-aSH201807/commit/77c4b36)
+
 ## Before you ship
 
 `pnpm check:evidence` verifies your citations resolve to real commits, that the
